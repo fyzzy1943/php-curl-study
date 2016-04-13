@@ -7,18 +7,33 @@ $html = curl_exec($proxy);
 $regex = '/<table id="ip_list">([\s\S]*?)<\/table>/';
 preg_match($regex, $html, $result);
 preg_match('/<tr>[\s\S]*?<\/tr>([\s\S]*)/', $result[1], $html);
-//$html[1] = preg_replace('\s*', ' ', $html[1]);
+$html[1] = preg_replace('/\s*/', '', $html[1]);
 //$html[1] = str_replace(PHP_EOL, '', $html[1]);
 //print($html[1]);
-preg_match_all('/<td>((\d{1,3}\.){3}\d{1,3})<\/td>\s*'
-    .'<td>(\d*)<\/td>\s*<td>/', $html[1], $result, PREG_SET_ORDER);
+preg_match_all('/<td>((\d{1,3}\.){3}\d{1,3})<\/td>' //地址
+    .'<td>(\d*)<\/td>'  //端口
+    .'<td><ahref="\S*?">(\S*?)<\/a><\/td>'   //位置
+    .'<td>高匿<\/td><td>(\S*?)<\/td>' //类型
+    .'<td><divtitle="(\S*?)"class="bar">\S*?<\/div><\/div><\/td>' //速度
+    .'<td><divtitle="(\S*?)"class="bar">\S*?<\/div><\/div><\/td>' //连接时间
+    .'<td>(\S*?)<\/td>' //验证时间
+    .'/',
+    $html[1], $result, PREG_SET_ORDER);
 //var_dump($result[0]);
 //for ($i=0; $i<count($result[0]); ++$i) {
 //    echo '地址：'.$result[0][$i] , '<br>', PHP_EOL;
 //}
 //var_dump($result);
+
 foreach ($result as $re) {
-    echo '地址：'.$re[1].' 端口：'.$re[3] , '<br>', PHP_EOL;
+    echo '地址：'.$re[1]
+        .' 端口：'.$re[3]
+        .' 位置：'.$re[4]
+        .' 类型：'.$re[5]
+        .' 速度：'.$re[6]
+        .' 连接时间：'.$re[7]
+        .' 验证时间：'.$re[8]
+        , '<br>', PHP_EOL;
 }
 //echo $result[1][1];
 curl_close($proxy);
